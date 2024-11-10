@@ -1,0 +1,64 @@
+# Connect to MongoDB
+mongo
+
+# Switch to or create a new database
+use schoolDB
+
+# Create the `students` collection
+db.createCollection("students")
+
+
+db.students.insertOne({
+  "student_id": "S01",
+  "name": "John Doe",
+  "age": 20,
+  "gender": "Male",
+  "grades": {
+    "math": 85,
+    "science": 90,
+    "history": 78
+  },
+  "enrolled": true
+})
+
+
+db.students.insertMany([
+  {
+    "student_id": "S02",
+    "name": "Jane Smith",
+    "age": 21,
+    "gender": "Female",
+    "grades": { "math": 88, "science": 92, "history": 85 },
+    "enrolled": true
+  },
+  {
+    "student_id": "S03",
+    "name": "Sam Brown",
+    "age": 19,
+    "gender": "Male",
+    "grades": { "math": 75, "science": 78, "history": 80 },
+    "enrolled": false
+  },
+  {
+    "student_id": "S04",
+    "name": "Lucy Green",
+    "age": 22,
+    "gender": "Female",
+    "grades": { "math": 95, "science": 89, "history": 91 },
+    "enrolled": true
+  }
+])
+
+db.students.find({
+  $where: function() { return this.grades.math > 80; }
+})
+
+
+db.students.find().limit(2)
+
+db.students.find().skip(1).limit(2)
+
+db.students.find().sort({ age: -1 })
+
+db.students.find({ enrolled: true }).sort({ "grades.math": -1 }).skip(1).limit(2)
+

@@ -1,0 +1,87 @@
+// Switch to or create the "university" database
+use university
+
+db.createCollection("students")
+
+// Insert sample data into the "students" collection
+db.students.insertMany([
+  {
+    student_id: 1,
+    name: "John Doe",
+    age: 20,
+    department: "Computer Science",
+    GPA: 3.5,
+    subjects: ["Data Structures", "Algorithms"],
+    scholarship: null
+  },
+  {
+    student_id: 2,
+    name: "Jane Smith",
+    age: 22,
+    department: "Mathematics",
+    GPA: 3.8,
+    subjects: ["Calculus", "Statistics"],
+    scholarship: "Merit-based"
+  },
+  {
+    student_id: 3,
+    name: "Alice Johnson",
+    age: 21,
+    department: "Computer Science",
+    GPA: 3.6,
+    subjects: ["Machine Learning", "Data Structures"],
+    scholarship: null
+  },
+  {
+    student_id: 4,
+    name: "Bob Brown",
+    age: 23,
+    department: "Physics",
+    GPA: 3.2,
+    subjects: ["Quantum Mechanics", "Electromagnetism"],
+    scholarship: "Research-based"
+  },
+  {
+    student_id: 5,
+    name: "Eve Adams",
+    age: 24,
+    department: "Computer Science",
+    GPA: 3.7,
+    subjects: ["Artificial Intelligence", "Data Structures"],
+    scholarship: "Academic Excellence"
+  }
+])
+
+
+db.students.find({ department: "Computer Science" })
+
+
+db.students.findOne({ GPA: 3.5 })
+
+
+db.students.find({
+  department: "Computer Science",
+  GPA: { $gt: 3.5 }
+})
+
+db.students.find({
+  $or: [{ department: "Mathematics" }, { department: "Physics" }]
+})
+
+db.students.find({
+  scholarship: { $eq: null }
+})
+
+db.students.find({
+  GPA: { $gte: 3.5, $lte: 3.8 }
+})
+
+db.students.find({
+  subjects: { $exists: false }
+})
+
+db.students.find({
+  name: { $regex: /^J/, $options: "i" }
+})
+
+

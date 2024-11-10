@@ -1,0 +1,276 @@
+dityagawas@adityagawas-VirtualBox:~$ sudo systemctl start mongod
+[sudo] password for adityagawas: 
+adityagawas@adityagawas-VirtualBox:~$ mongosh
+Current Mongosh Log ID:	6731050ad05b17b7e1c1c18b
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.3
+Using MongoDB:		8.0.3
+Using Mongosh:		2.3.3
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2024-11-11T00:20:56.936+05:30: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2024-11-11T00:20:57.355+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2024-11-11T00:20:57.355+05:30: For customers running the current memory allocator, we suggest changing the contents of the following sysfsFile
+   2024-11-11T00:20:57.355+05:30: For customers running the current memory allocator, we suggest changing the contents of the following sysfsFile
+   2024-11-11T00:20:57.355+05:30: We suggest setting the contents of sysfsFile to 0.
+   2024-11-11T00:20:57.355+05:30: We suggest setting swappiness to 0 or 1, as swapping can cause performance problems.
+------
+
+test> use university
+switched to db university
+university> db.createCollection("students")
+{ ok: 1 }
+university> db.students.insertMany([
+...   {
+...     student_id: 1,
+...     name: "John Doe",
+...     age: 20,
+...     department: "Computer Science",
+...     GPA: 3.5,
+...     subjects: ["Data Structures", "Algorithms"],
+...     scholarship: null
+...   },
+...   {
+...     student_id: 2,
+...     name: "Jane Smith",
+...     age: 22,
+...     department: "Mathematics",
+...     GPA: 3.8,
+...     subjects: ["Calculus", "Statistics"],
+...     scholarship: "Merit-based"
+...   },
+...   {
+...     student_id: 3,
+...     name: "Alice Johnson",
+...     age: 21,
+...     department: "Computer Science",
+...     GPA: 3.6,
+...     subjects: ["Machine Learning", "Data Structures"],
+...     scholarship: null
+...   },
+...   {
+...     student_id: 4,
+...     name: "Bob Brown",
+...     age: 23,
+...     department: "Physics",
+...     GPA: 3.2,
+...     subjects: ["Quantum Mechanics", "Electromagnetism"],
+...     scholarship: "Research-based"
+...   },
+...   {
+...     student_id: 5,
+...     name: "Eve Adams",
+...     age: 24,
+...     department: "Computer Science",
+...     GPA: 3.7,
+...     subjects: ["Artificial Intelligence", "Data Structures"],
+...     scholarship: "Academic Excellence"
+...   }
+... ])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('673105bad05b17b7e1c1c18c'),
+    '1': ObjectId('673105bad05b17b7e1c1c18d'),
+    '2': ObjectId('673105bad05b17b7e1c1c18e'),
+    '3': ObjectId('673105bad05b17b7e1c1c18f'),
+    '4': ObjectId('673105bad05b17b7e1c1c190')
+  }
+}
+university> db.students.find({ department: "Computer Science" })
+[
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18c'),
+    student_id: 1,
+    name: 'John Doe',
+    age: 20,
+    department: 'Computer Science',
+    GPA: 3.5,
+    subjects: [ 'Data Structures', 'Algorithms' ],
+    scholarship: null
+  },
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18e'),
+    student_id: 3,
+    name: 'Alice Johnson',
+    age: 21,
+    department: 'Computer Science',
+    GPA: 3.6,
+    subjects: [ 'Machine Learning', 'Data Structures' ],
+    scholarship: null
+  },
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c190'),
+    student_id: 5,
+    name: 'Eve Adams',
+    age: 24,
+    department: 'Computer Science',
+    GPA: 3.7,
+    subjects: [ 'Artificial Intelligence', 'Data Structures' ],
+    scholarship: 'Academic Excellence'
+  }
+]
+university> db.students.findOne({ GPA: 3.5 })
+{
+  _id: ObjectId('673105bad05b17b7e1c1c18c'),
+  student_id: 1,
+  name: 'John Doe',
+  age: 20,
+  department: 'Computer Science',
+  GPA: 3.5,
+  subjects: [ 'Data Structures', 'Algorithms' ],
+  scholarship: null
+}
+university> db.students.find({
+...   department: "Computer Science",
+...   GPA: { $gt: 3.5 }
+... })
+[
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18e'),
+    student_id: 3,
+    name: 'Alice Johnson',
+    age: 21,
+    department: 'Computer Science',
+    GPA: 3.6,
+    subjects: [ 'Machine Learning', 'Data Structures' ],
+    scholarship: null
+  },
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c190'),
+    student_id: 5,
+    name: 'Eve Adams',
+    age: 24,
+    department: 'Computer Science',
+    GPA: 3.7,
+    subjects: [ 'Artificial Intelligence', 'Data Structures' ],
+    scholarship: 'Academic Excellence'
+  }
+]
+university> db.students.find({
+...   $or: [{ department: "Mathematics" }, { department: "Physics" }]
+... })
+[
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18d'),
+    student_id: 2,
+    name: 'Jane Smith',
+    age: 22,
+    department: 'Mathematics',
+    GPA: 3.8,
+    subjects: [ 'Calculus', 'Statistics' ],
+    scholarship: 'Merit-based'
+  },
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18f'),
+    student_id: 4,
+    name: 'Bob Brown',
+    age: 23,
+    department: 'Physics',
+    GPA: 3.2,
+    subjects: [ 'Quantum Mechanics', 'Electromagnetism' ],
+    scholarship: 'Research-based'
+  }
+]
+university> db.students.find({
+...   scholarship: { $eq: null }
+... })
+[
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18c'),
+    student_id: 1,
+    name: 'John Doe',
+    age: 20,
+    department: 'Computer Science',
+    GPA: 3.5,
+    subjects: [ 'Data Structures', 'Algorithms' ],
+    scholarship: null
+  },
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18e'),
+    student_id: 3,
+    name: 'Alice Johnson',
+    age: 21,
+    department: 'Computer Science',
+    GPA: 3.6,
+    subjects: [ 'Machine Learning', 'Data Structures' ],
+    scholarship: null
+  }
+]
+university> db.students.find({
+...   GPA: { $gte: 3.5, $lte: 3.8 }
+... })
+[
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18c'),
+    student_id: 1,
+    name: 'John Doe',
+    age: 20,
+    department: 'Computer Science',
+    GPA: 3.5,
+    subjects: [ 'Data Structures', 'Algorithms' ],
+    scholarship: null
+  },
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18d'),
+    student_id: 2,
+    name: 'Jane Smith',
+    age: 22,
+    department: 'Mathematics',
+    GPA: 3.8,
+    subjects: [ 'Calculus', 'Statistics' ],
+    scholarship: 'Merit-based'
+  },
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18e'),
+    student_id: 3,
+    name: 'Alice Johnson',
+    age: 21,
+    department: 'Computer Science',
+    GPA: 3.6,
+    subjects: [ 'Machine Learning', 'Data Structures' ],
+    scholarship: null
+  },
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c190'),
+    student_id: 5,
+    name: 'Eve Adams',
+    age: 24,
+    department: 'Computer Science',
+    GPA: 3.7,
+    subjects: [ 'Artificial Intelligence', 'Data Structures' ],
+    scholarship: 'Academic Excellence'
+  }
+]
+university> db.students.find({
+...   subjects: { $exists: false }
+... })
+
+university> db.students.find({
+...   name: { $regex: /^J/, $options: "i" }
+... })
+[
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18c'),
+    student_id: 1,
+    name: 'John Doe',
+    age: 20,
+    department: 'Computer Science',
+    GPA: 3.5,
+    subjects: [ 'Data Structures', 'Algorithms' ],
+    scholarship: null
+  },
+  {
+    _id: ObjectId('673105bad05b17b7e1c1c18d'),
+    student_id: 2,
+    name: 'Jane Smith',
+    age: 22,
+    department: 'Mathematics',
+    GPA: 3.8,
+    subjects: [ 'Calculus', 'Statistics' ],
+    scholarship: 'Merit-based'
+  }
+]
+

@@ -1,0 +1,84 @@
+// Switch to or create a new database called "school"
+use school
+
+// Create a collection named "students"
+db.createCollection("students")
+
+db.students.insertOne({
+  student_id: 1,
+  name: "Alice",
+  age: 21,
+  major: "Computer Science",
+  grades: [90, 85, 88]
+})
+
+db.students.insertMany([
+  {
+    student_id: 2,
+    name: "Bob",
+    age: 22,
+    major: "Mathematics",
+    grades: [78, 82, 89]
+  },
+  {
+    student_id: 3,
+    name: "Carol",
+    age: 23,
+    major: "Physics",
+    grades: [95, 92, 90]
+  }
+])
+
+db.runCommand({
+  collMod: "students",
+  validator: { $jsonSchema: {
+      bsonType: "object",
+      required: ["name", "age"],
+      properties: {
+        age: {
+          bsonType: "int",
+          minimum: 0,
+          description: "must be a positive integer"
+        }
+      }
+    }
+  }
+})
+
+// Remove the student with student_id 2
+db.students.deleteOne({ student_id: 2 })
+
+// Remove students who are older than 22
+db.students.deleteMany({ age: { $gt: 22 } })
+
+// Replace document with student_id 1
+db.students.replaceOne(
+  { student_id: 1 },
+  { student_id: 1, name: "Alice", age: 21, major: "Biology", grades: [88, 86, 90] }
+)
+
+// Update Alice's major
+db.students.updateOne(
+  { student_id: 1 },
+  { $set: { major: "Data Science" } }
+)
+
+// Update Bob's age, or insert if document with student_id 2 doesn't exist
+db.students.updateOne(
+  { student_id: 2 },
+  { $set: { name: "Bob", age: 22, major: "Mathematics" } },
+  { upsert: true }
+)
+
+// Increase age of all students by 1
+db.students.updateMany(
+  {},
+  { $inc: { age: 1 } }
+)
+// Update and return the updated document
+db.students.findOneAndUpdate(
+  { student_id: 1 },
+  { $set: { major: "Artificial Intelligence" } },
+  { returnNewDocument: true }
+)
+

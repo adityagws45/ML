@@ -1,0 +1,145 @@
+adityagawas@adityagawas-VirtualBox:~$ sudo systemctl start mongod
+[sudo] password for adityagawas: 
+adityagawas@adityagawas-VirtualBox:~$ mongosh
+Current Mongosh Log ID:	6731009546e162dc12c1c18b
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.3
+Using MongoDB:		8.0.3
+Using Mongosh:		2.3.3
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2024-11-11T00:20:56.936+05:30: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2024-11-11T00:20:57.355+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2024-11-11T00:20:57.355+05:30: For customers running the current memory allocator, we suggest changing the contents of the following sysfsFile
+   2024-11-11T00:20:57.355+05:30: For customers running the current memory allocator, we suggest changing the contents of the following sysfsFile
+   2024-11-11T00:20:57.355+05:30: We suggest setting the contents of sysfsFile to 0.
+   2024-11-11T00:20:57.355+05:30: We suggest setting swappiness to 0 or 1, as swapping can cause performance problems.
+------
+
+test> use school
+switched to db school
+school> db.createCollection("students")
+{ ok: 1 }
+school> db.students.insertOne({
+...   student_id: 1,
+...   name: "Alice",
+...   age: 21,
+...   major: "Computer Science",
+...   grades: [90, 85, 88]
+... })
+{
+  acknowledged: true,
+  insertedId: ObjectId('673100d146e162dc12c1c18c')
+}
+school> db.students.insertMany([
+...   {
+...     student_id: 2,
+...     name: "Bob",
+...     age: 22,
+...     major: "Mathematics",
+...     grades: [78, 82, 89]
+...   },
+...   {
+...     student_id: 3,
+...     name: "Carol",
+...     age: 23,
+...     major: "Physics",
+...     grades: [95, 92, 90]
+...   }
+... ])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('673100e446e162dc12c1c18d'),
+    '1': ObjectId('673100e446e162dc12c1c18e')
+  }
+}
+
+#insert validation
+school> db.runCommand({
+...   collMod: "students",
+...   validator: { $jsonSchema: {
+...       bsonType: "object",
+...       required: ["name", "age"],
+...       properties: {
+...         age: {
+...           bsonType: "int",
+...           minimum: 0,
+...           description: "must be a positive integer"
+...         }
+...       }
+...     }
+...   }
+... })
+{ ok: 1 }
+school> db.students.deleteOne({ student_id: 2 })
+{ acknowledged: true, deletedCount: 1 }
+school> db.students.deleteMany({ age: { $gt: 22 } })
+{ acknowledged: true, deletedCount: 1 }
+school> db.students.replaceOne(
+...   { student_id: 1 },
+...   { student_id: 1, name: "Alice", age: 21, major: "Biology", grades: [88, 86, 90] }
+... )
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+#Using Modifiers
+
+Modifiers allow partial updates to documents. For example, the $set modifier updates specific fields in a document.
+
+school> db.students.updateOne(
+...   { student_id: 1 },
+...   { $set: { major: "Data Science" } }
+... )
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+school> db.students.updateOne(
+...   { student_id: 2 },
+...   { $set: { name: "Bob", age: 22, major: "Mathematics" } },
+...   { upsert: true }
+... )
+{
+  acknowledged: true,
+  insertedId: ObjectId('6731013898748972f6b2ef57'),
+  matchedCount: 0,
+  modifiedCount: 0,
+  upsertedCount: 1
+}
+school> db.students.updateMany(
+...   {},
+...   { $inc: { age: 1 } }
+... )
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 3,
+  modifiedCount: 3,
+  upsertedCount: 0
+}
+school> db.students.findOneAndUpdate(
+...   { student_id: 1 },
+...   { $set: { major: "Artificial Intelligence" } },
+...   { returnNewDocument: true }
+... )
+{
+  _id: ObjectId('673100d146e162dc12c1c18c'),
+  student_id: 1,
+  name: 'Alice',
+  age: 22,
+  major: 'Artificial Intelligence',
+  grades: [ 88, 86, 90 ]
+}
+school> 
+

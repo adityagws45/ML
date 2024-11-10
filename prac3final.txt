@@ -1,0 +1,216 @@
+dityagawas@adityagawas-VirtualBox:~$ sudo systemctl mongod
+[sudo] password for adityagawas: 
+Unknown command verb 'mongod', did you mean 'bind'?
+adityagawas@adityagawas-VirtualBox:~$ mongosh
+Current Mongosh Log ID:	673108b0bf9c3342f9c1c18b
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.3
+Using MongoDB:		8.0.3
+Using Mongosh:		2.3.3
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2024-11-11T00:20:56.936+05:30: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2024-11-11T00:20:57.355+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2024-11-11T00:20:57.355+05:30: For customers running the current memory allocator, we suggest changing the contents of the following sysfsFile
+   2024-11-11T00:20:57.355+05:30: For customers running the current memory allocator, we suggest changing the contents of the following sysfsFile
+   2024-11-11T00:20:57.355+05:30: We suggest setting the contents of sysfsFile to 0.
+   2024-11-11T00:20:57.355+05:30: We suggest setting swappiness to 0 or 1, as swapping can cause performance problems.
+------
+
+test> use schoolDb
+switched to db schoolDb
+schoolDb> db.createCollection("students")
+{ ok: 1 }
+schoolDb> 
+
+schoolDb> db.students.insertOne({
+...   "student_id": "S01",
+...   "name": "John Doe",
+...   "age": 20,
+...   "gender": "Male",
+...   "grades": {
+...     "math": 85,
+...     "science": 90,
+...     "history": 78
+...   },
+...   "enrolled": true
+... })
+{
+  acknowledged: true,
+  insertedId: ObjectId('673108e2bf9c3342f9c1c18c')
+}
+schoolDb> 
+
+schoolDb> db.students.insertMany([
+...   {
+...     "student_id": "S02",
+...     "name": "Jane Smith",
+...     "age": 21,
+...     "gender": "Female",
+...     "grades": { "math": 88, "science": 92, "history": 85 },
+...     "enrolled": true
+...   },
+...   {
+...     "student_id": "S03",
+...     "name": "Sam Brown",
+...     "age": 19,
+...     "gender": "Male",
+...     "grades": { "math": 75, "science": 78, "history": 80 },
+...     "enrolled": false
+...   },
+...   {
+...     "student_id": "S04",
+...     "name": "Lucy Green",
+...     "age": 22,
+...     "gender": "Female",
+...     "grades": { "math": 95, "science": 89, "history": 91 },
+...     "enrolled": true
+...   }
+... ])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('673108f8bf9c3342f9c1c18d'),
+    '1': ObjectId('673108f8bf9c3342f9c1c18e'),
+    '2': ObjectId('673108f8bf9c3342f9c1c18f')
+  }
+}
+schoolDb> db.students.find({
+...   $where: function() { return this.grades.math > 80; }
+... })
+[
+  {
+    _id: ObjectId('673108e2bf9c3342f9c1c18c'),
+    student_id: 'S01',
+    name: 'John Doe',
+    age: 20,
+    gender: 'Male',
+    grades: { math: 85, science: 90, history: 78 },
+    enrolled: true
+  },
+  {
+    _id: ObjectId('673108f8bf9c3342f9c1c18d'),
+    student_id: 'S02',
+    name: 'Jane Smith',
+    age: 21,
+    gender: 'Female',
+    grades: { math: 88, science: 92, history: 85 },
+    enrolled: true
+  },
+  {
+    _id: ObjectId('673108f8bf9c3342f9c1c18f'),
+    student_id: 'S04',
+    name: 'Lucy Green',
+    age: 22,
+    gender: 'Female',
+    grades: { math: 95, science: 89, history: 91 },
+    enrolled: true
+  }
+]
+schoolDb> db.students.find().limit(2)
+[
+  {
+    _id: ObjectId('673108e2bf9c3342f9c1c18c'),
+    student_id: 'S01',
+    name: 'John Doe',
+    age: 20,
+    gender: 'Male',
+    grades: { math: 85, science: 90, history: 78 },
+    enrolled: true
+  },
+  {
+    _id: ObjectId('673108f8bf9c3342f9c1c18d'),
+    student_id: 'S02',
+    name: 'Jane Smith',
+    age: 21,
+    gender: 'Female',
+    grades: { math: 88, science: 92, history: 85 },
+    enrolled: true
+  }
+]
+schoolDb> db.students.find().skip(1).limit(2)
+[
+  {
+    _id: ObjectId('673108f8bf9c3342f9c1c18d'),
+    student_id: 'S02',
+    name: 'Jane Smith',
+    age: 21,
+    gender: 'Female',
+    grades: { math: 88, science: 92, history: 85 },
+    enrolled: true
+  },
+  {
+    _id: ObjectId('673108f8bf9c3342f9c1c18e'),
+    student_id: 'S03',
+    name: 'Sam Brown',
+    age: 19,
+    gender: 'Male',
+    grades: { math: 75, science: 78, history: 80 },
+    enrolled: false
+  }
+]
+schoolDb> 
+
+schoolDb> db.students.find().sort({ age: -1 })
+[
+  {
+    _id: ObjectId('673108f8bf9c3342f9c1c18f'),
+    student_id: 'S04',
+    name: 'Lucy Green',
+    age: 22,
+    gender: 'Female',
+    grades: { math: 95, science: 89, history: 91 },
+    enrolled: true
+  },
+  {
+    _id: ObjectId('673108f8bf9c3342f9c1c18d'),
+    student_id: 'S02',
+    name: 'Jane Smith',
+    age: 21,
+    gender: 'Female',
+    grades: { math: 88, science: 92, history: 85 },
+    enrolled: true
+  },
+  {
+    _id: ObjectId('673108e2bf9c3342f9c1c18c'),
+    student_id: 'S01',
+    name: 'John Doe',
+    age: 20,
+    gender: 'Male',
+    grades: { math: 85, science: 90, history: 78 },
+    enrolled: true
+  },
+  {
+    _id: ObjectId('673108f8bf9c3342f9c1c18e'),
+    student_id: 'S03',
+    name: 'Sam Brown',
+    age: 19,
+    gender: 'Male',
+    grades: { math: 75, science: 78, history: 80 },
+    enrolled: false
+  }
+]
+schoolDb> db.students.find({ enrolled: true }).sort({ "grades.math": -1 }).skip(1).limit(2)
+[
+  {
+    _id: ObjectId('673108f8bf9c3342f9c1c18d'),
+    student_id: 'S02',
+    name: 'Jane Smith',
+    age: 21,
+    gender: 'Female',
+    grades: { math: 88, science: 92, history: 85 },
+    enrolled: true
+  },
+  {
+    _id: ObjectId('673108e2bf9c3342f9c1c18c'),
+    student_id: 'S01',
+    name: 'John Doe',
+    age: 20,
+    gender: 'Male',
+    grades: { math: 85, science: 90, history: 78 },
+    enrolled: true
+  }
+]
+
